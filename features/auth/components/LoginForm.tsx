@@ -3,11 +3,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 
-import {
-	RegisterSchema,
-	type TypeRegisterSchema
-} from '@/features/auth/schemas'
-import { useSignup } from '@/features/auth/hooks/useAuth'
+import { LoginSchema, type TypeLoginSchema } from '@/features/auth/schemas'
+import { useLogin } from '@/features/auth/hooks/useAuth'
 
 import {
 	Button,
@@ -22,45 +19,30 @@ import {
 
 import { AuthWrapper } from './AuthWrapper'
 
-export const RegisterForm = () => {
-	const signupMutation = useSignup()
+export const LoginForm = () => {
+	const loginMutation = useLogin()
 
-	const form = useForm<TypeRegisterSchema>({
-		resolver: zodResolver(RegisterSchema),
+	const form = useForm<TypeLoginSchema>({
+		resolver: zodResolver(LoginSchema),
 		defaultValues: {
-			name: '',
 			email: '',
-			password: '',
-			passwordRepeat: ''
+			password: ''
 		}
 	})
 
-	const onSubmit = (values: TypeRegisterSchema) => {
-		const { passwordRepeat, ...signupData } = values
-		signupMutation.mutate(signupData)
+	const onSubmit = (values: TypeLoginSchema) => {
+		loginMutation.mutate(values)
 	}
 
 	return (
 		<AuthWrapper
-			heading='Регистрация'
+			heading='Войти'
 			description='Чтобы войти на сайт введите вашу почту и пароль'
-			backButtonLabel='У вас уже есть аккаунт?'
-			backButtonUrl='/auth/login'
+			backButtonLabel='Ещё нет аккаунта?'
+			backButtonUrl='/auth/signup'
 		>
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-2'>
-					<FormField
-						control={form.control}
-						name='name'
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Имя</FormLabel>
-								<FormControl>
-									<Input placeholder='Иван' {...field} />
-								</FormControl>
-							</FormItem>
-						)}
-					/>
 					<FormField
 						control={form.control}
 						name='email'
@@ -91,25 +73,12 @@ export const RegisterForm = () => {
 							</FormItem>
 						)}
 					/>
-					<FormField
-						control={form.control}
-						name='passwordRepeat'
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Подтверждение пароля</FormLabel>
-								<FormControl>
-									<Input placeholder='**********' type='password' {...field} />
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
 					<Button
 						type='submit'
 						className='w-full cursor-pointer'
-						disabled={signupMutation.isPending}
+						disabled={loginMutation.isPending}
 					>
-						{signupMutation.isPending ? 'Создание...' : 'Создать аккаунт'}
+						{loginMutation.isPending ? 'Вход...' : 'Войти'}
 					</Button>
 				</form>
 			</Form>
